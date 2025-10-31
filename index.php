@@ -68,7 +68,7 @@
                 <?php 
                 require 'conecta.php';
                 $conexion->select_db($database);
-                $comprobar = "SELECT * FROM lectores WHERE n_prestado>0";
+                $comprobar = "SELECT * FROM lectores WHERE n_prestado>0 AND estado=TRUE";
                 $registro = $conexion->query($comprobar);
                 //recorremos las tuplas
                 while($resultado = $registro->fetch_assoc()){
@@ -84,7 +84,7 @@
                 <?php 
                 require 'conecta.php';
                 $conexion->select_db($database);
-                $comprobar = "SELECT * FROM libros WHERE n_prestado>0";
+                $comprobar = "SELECT nombre FROM libros WHERE id IN (SELECT id_libro FROM prestamos WHERE id_lector = (SELECT id FROM lectores WHERE lector = ";
                 $registro = $conexion->query($comprobar);
                 //recorremos las tuplas
                 while($resultado = $registro->fetch_assoc()){
@@ -94,6 +94,19 @@
                 ?>
                 </select>
         </label>
+    </form>
+    <hr>
+    <h2>Añadir un libro al catálogo</h2>
+    <form action="procesar_aniadir.php" method="post">
+        <label for="nombre">Nombre del libro: <input type="text" name="nombre"></label>
+        <label for="autor">Autor: <input type="text" name="autor"></label>
+        <label for="publicacion">Año de publicación: <input type="number" name="publicacion"></label>
+        <br><br>
+        <label for="isbn">ISBN: <input type="text" name="isbn"></label>
+        <label for="n_totales">Nº Libros totales: <input type="number" name="n_totales"></label>
+        <label for="n_disponibles">Nº Libros para prestar: <input type="number" name="n_disponibles" id=""></label>
+        <br><br>
+        <label for="sinopsis">Sinopsis: <br><textarea name="sinopsis" rows="4" cols="110"></textarea></label>
     </form>
 </body>
 </html>

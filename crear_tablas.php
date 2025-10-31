@@ -21,11 +21,11 @@ if ($comprobar->num_rows <= 0) {
     CREATE TABLE lectores (    
     id INT AUTO_INCREMENT PRIMARY KEY, 
     lector VARCHAR(50) NOT NULL, 
-    dni VARCHAR(9) NOT NULL,
+    dni VARCHAR(9) UNIQUE NOT NULL,
     estado BOOLEAN default TRUE NOT NULL,
     n_prestado INT(10) NOT NULL);
 
-    CREATE TABLE prestamo (
+    CREATE TABLE prestamos (
     id_lector INT,
     id_libro INT,
     PRIMARY KEY (id_lector, id_libro),

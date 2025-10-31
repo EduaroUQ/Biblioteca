@@ -13,8 +13,8 @@ if (isset($_POST['registrar'])) {
     $registrar = $conexion->real_escape_string($_POST['registrar']);
 
     // Realizar la inserción en la base de datos
-    $registrar_lector = "INSERT INTO (lector, dni, estado, n_prestado) 
-                        VALUES ('$lector', '$dni', '$estado', '$prestamos', '$registrar')";
+    $registrar_lector = "INSERT INTO lectores (lector, dni, estado, n_prestado)
+                        VALUES ('$lector', '$dni', $estado, $prestamos)";
 
     if ($conexion->query($registrar_lector)) {
         echo "Registro exitoso";

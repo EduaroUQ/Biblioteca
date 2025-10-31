@@ -6,21 +6,23 @@
     <title>Biblioteca</title>
 </head>
 <body>
+    <?php require('crear_tablas.php');
+    require('conecta.php'); ?>
     <h1>Biblioteca</h1>
     <h2>Registrar un Nuevo Lector</h2>
     <form action="procesar_registro.php" method="post">
-    <label for="lector">Nombre y apellidos: <input type="text" name="lector"></label>
-    <br><br>
-    <label for="dni">DNI: <input type="text" name="dni"></label>
-    <br><br>
-    <label for="estado">Estado: <select name="estado">
-        <option value="alta" selected>Alta</option>
-        <option value="baja">Baja</option>
-    </select></label>
-    <br><br>
-    <label for="préstamos">Préstamos: <input type="number" name="prestamos" value="0"></label>
-    <br><br>
-    <input type="button" value="Registrar" name="registrar">
+        <label for="lector">Nombre y apellidos: <input type="text" name="lector"></label>
+        <br><br>
+        <label for="dni">DNI: <input type="text" name="dni"></label>
+        <!-- <br><br>
+        <label for="estado">Estado: <select name="estado">
+                <option value="1" selected>Alta</option>
+                <option value="0">Baja</option>
+            </select></label>
+        <br><br>
+        <label for="préstamos">Préstamos: <input type="number" name="prestamos" value="0"></label>
+        <br><br> -->
+        <input type="submit" value="Registrar" name="registrar">
     </form>
     <hr>
     <h2>Realizar un préstamo</h2>
@@ -28,36 +30,30 @@
         <label for="lector">
             Lector: <select name="lector">
                 <!--Rellenamos el select con los datos de la tabla-->
-                <?php 
-                require 'conecta.php';
-                $conexion->select_db($database);
+                <?php
                 $comprobar = "SELECT * FROM lectores WHERE estado=TRUE";
                 $registro = $conexion->query($comprobar);
                 //recorremos las tuplas
                 while($resultado = $registro->fetch_assoc()){
                     echo "<option value='$resultado[id]'>$resultado[lector] - $resultado[dni]</option>";
                 }
-                $conexion->close();
                 ?>
                 </select>
         </label>
         <label for="nombre">
         Libro: <select name="nombre">
                 <!--Rellenamos el select con los datos de la tabla-->
-                <?php 
-                require 'conecta.php';
-                $conexion->select_db($database);
-                $comprobar = "SELECT * FROM libros WHERE disponibles > 0";
+                <?php
+                $comprobar = "SELECT * FROM libros WHERE n_disponibles > 0";
                 $registro = $conexion->query($comprobar);
                 //recorremos las tuplas
-                while($resultado = $registro->fetch_row()){
-                    echo "<option value='$resultado[0]'>$resultado[0]</option>";
+                while ($resultado = $registro->fetch_assoc()) {
+                    echo "<option value='$resultado[id]'>$resultado[nombre]</option>";
                 }
-                $conexion->close();
                 ?>
                 </select>
         </label>
-            <input type="button" value="Realizar un préstamo" name="prestar">
+        <input type="submit" value="Realizar un préstamo" name="prestar">
     </form>
     <hr>
     <h2>Devolver un préstamos</h2>
@@ -65,48 +61,30 @@
         <label for="lector">
         Lector: <select name="lector">
                 <!--Rellenamos el select con los datos de la tabla-->
-                <?php 
-                require 'conecta.php';
-                $conexion->select_db($database);
-                $comprobar = "SELECT * FROM lectores WHERE n_prestado>0 AND estado=TRUE";
+                <?php
+                $comprobar = "SELECT * FROM lectores WHERE n_prestado>0";
                 $registro = $conexion->query($comprobar);
                 //recorremos las tuplas
                 while($resultado = $registro->fetch_assoc()){
                     echo "<option value='$resultado[id]'>$resultado[lector] - $resultado[dni]</option>";
                 }
-                $conexion->close();
                 ?>
                 </select>
         </label>
         <label for="lector">
         Libro a devolver: <select name="nombre">
                 <!--Rellenamos el select con los datos de la tabla-->
-                <?php 
-                require 'conecta.php';
-                $conexion->select_db($database);
-                $comprobar = "SELECT nombre FROM libros WHERE id IN (SELECT id_libro FROM prestamos WHERE id_lector = (SELECT id FROM lectores WHERE lector = ";
+                <?php
+                $comprobar = "SELECT * FROM libros WHERE n_prestado>0";
                 $registro = $conexion->query($comprobar);
                 //recorremos las tuplas
                 while($resultado = $registro->fetch_assoc()){
                     echo "<option value='$resultado[id]'>$resultado[lector] - $resultado[dni]</option>";
                 }
-                $conexion->close();
                 ?>
                 </select>
         </label>
     </form>
-    <hr>
-    <h2>Añadir un libro al catálogo</h2>
-    <form action="procesar_aniadir.php" method="post">
-        <label for="nombre">Nombre del libro: <input type="text" name="nombre"></label>
-        <label for="autor">Autor: <input type="text" name="autor"></label>
-        <label for="publicacion">Año de publicación: <input type="number" name="publicacion"></label>
-        <br><br>
-        <label for="isbn">ISBN: <input type="text" name="isbn"></label>
-        <label for="n_totales">Nº Libros totales: <input type="number" name="n_totales"></label>
-        <label for="n_disponibles">Nº Libros para prestar: <input type="number" name="n_disponibles" id=""></label>
-        <br><br>
-        <label for="sinopsis">Sinopsis: <br><textarea name="sinopsis" rows="4" cols="110"></textarea></label>
-    </form>
+    <?php $conexion->close(); ?>
 </body>
 </html>

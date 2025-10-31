@@ -1,9 +1,7 @@
 <?php
 include('conecta.php');
-// Conectamos a la base de datos
-$conexion->select_db($database);
 // Comprobar si la tabla de supermercado existe, y si no existe la crea
-$comprobar_tabla = "SHOW TABLES LIKE 'libros','lectores','prestamo' ";
+$comprobar_tabla = "SHOW TABLES LIKE 'libros' ";
 $comprobar = $conexion->query($comprobar_tabla) or die("Error al comprobar la tabla incidencias: " . $conexion->error);
 
 if ($comprobar->num_rows <= 0) {

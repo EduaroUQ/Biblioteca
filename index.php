@@ -58,35 +58,24 @@
         <input type="submit" value="Realizar un préstamo" name="prestar">
     </form>
     <hr>
-    <h2>Devolver un préstamos</h2>
+    <h2>Devolver un préstamo</h2>
     <form action="procesar_devolver.php" method="post">
-        <label for="lector">
-            Lector: <select name="lector">
+        <label for="prestamo">
+            Préstamo: <select name="prestamo">
                 <!--Rellenamos el select con los datos de la tabla-->
                 <?php
-                $comprobar = "SELECT * FROM lectores WHERE n_prestado>0";
+                $comprobar = "SELECT * FROM prestamos";
                 $registro = $conexion->query($comprobar);
                 //recorremos las tuplas
                 while ($resultado = $registro->fetch_assoc()) {
-                    echo "<option value='$resultado[id]'>$resultado[lector] - $resultado[dni]</option>";
-                }
-                ?>
-            </select>
-        </label>
-        <label for="lector">
-            Libro a devolver: <select name="nombre">
-                <!--Rellenamos el select con los datos de la tabla-->
-                <?php
-                $comprobar = "SELECT * FROM libros WHERE n_prestado>0";
-                $registro = $conexion->query($comprobar);
-                //recorremos las tuplas
-                while ($resultado = $registro->fetch_assoc()) {
-                    echo "<option value='$resultado[id]'>$resultado[lector] - $resultado[dni]</option>";
+                    echo "<option value='$resultado[id_lector]-$resultado[id_libro]'>$resultado[id_lector] - $resultado[id_libro]</option>";
                 }
                 ?>
             </select>
         </label>
     </form>
+
+
     <?php $conexion->close(); ?>
 </body>
 

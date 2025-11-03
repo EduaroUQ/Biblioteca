@@ -7,33 +7,43 @@ if (isset($_POST['prestar'])) {
     $lector = $conexion->real_escape_string($_POST['lector']);
     $nombre_libro = $conexion->real_escape_string($_POST['nombre']);
 
-    // Verificar si el lector ya tiene prestado ese libro
+    // 1. Verificar si el lector ya tiene prestado ese libro
     $verificar_prestamo = "SELECT * FROM prestamo WHERE id_lector = $lector AND id_libro = $nombre_libro";
     $resultado_verificacion = $conexion->query($verificar_prestamo);
 
     if ($resultado_verificacion->num_rows > 0) {
-        echo "Este lector ya tiene prestado este libro. No se puede realizar otro préstamo.";
+        echo "Este lector ya tiene prestado este libro.";
     } else {
-        // Realizar la inserción en la base de datos
-        $registrar_prestamo = "INSERT INTO prestamo VALUES ($lector, $nombre_libro)";
+        // 2. Verificar disponibilidad del libro
+        $consulta_disponibilidad = "SELECT n_disponibles FROM libros WHERE id = $nombre_libro";
+        $resultado_disponibilidad = $conexion->query($consulta_disponibilidad);
 
-        if ($conexion->query($registrar_prestamo)) {
-            echo "Registro exitoso";
+        if ($fila_libro = $resultado_disponibilidad->fetch_assoc()) {
+            if ($fila_libro['n_disponibles'] > 0) {
+                // 3. Insertar préstamo
+                $registrar_prestamo = "INSERT INTO prestamo VALUES ($lector, $nombre_libro)";
+                if ($conexion->query($registrar_prestamo)) {
+                    echo "Registro exitoso";
 
-            // Recuperamos la cantidad de préstamo para aumentarle uno
-            $consulta_prestamo = "SELECT n_prestado FROM lectores WHERE id=$lector";
-            $resultado_prestamo = $conexion->query($consulta_prestamo);
+                    // Actualizar número de préstamos del lector
+                    $consulta_prestamo = "SELECT n_prestado FROM lectores WHERE id=$lector";
+                    $resultado_prestamo = $conexion->query($consulta_prestamo);
+                    if ($fila = $resultado_prestamo->fetch_assoc()) {
+                        $prestamo_nuevo = $fila['n_prestado'] + 1;
+                        $conexion->query("UPDATE lectores SET n_prestado=$prestamo_nuevo WHERE id=$lector");
+                    }
 
-            if ($fila = $resultado_prestamo->fetch_assoc()) {
-                $prestamo_anterior = $fila['n_prestado'];
-                $prestamo_nuevo = $prestamo_anterior + 1;
-                // Incrementar libro en el número de préstamos del lector
-                $actualizar = "UPDATE lectores SET n_prestado=$prestamo_nuevo WHERE id=$lector";
-                $conexion->query($actualizar) or die("Error al actualizar los datos");
-                echo "Actualizado con éxito. Nuevo stock: $prestamo_nuevo";
+                    // Actualizar disponibilidad del libro
+                    $nuevo_stock = $fila_libro['n_disponible'] - 1;
+                    $conexion->query("UPDATE libros SET n_disponibles=$nuevo_stock WHERE id=$nombre_libro");
+                } else {
+                    echo "Error al registrar: " . $conexion->error;
+                }
+            } else {
+                echo "No hay ejemplares disponibles de este libro.";
             }
         } else {
-            echo "Error al registrar: " . $conexion->error;
+            echo "Libro no encontrado.";
         }
     }
 }

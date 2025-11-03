@@ -60,19 +60,41 @@
     <hr>
     <h2>Devolver un préstamo</h2>
     <form action="procesar_devolver.php" method="post">
-        <label for="prestamo">
-            Préstamo: <select name="prestamo">
+        <label for="prestamo">Préstamo a devolver:
+            <select name="prestamo" required>
+                <option value="" selected disabled>Selecciona una opción</option>
                 <!--Rellenamos el select con los datos de la tabla-->
                 <?php
-                $comprobar = "SELECT * FROM prestamos";
-                $registro = $conexion->query($comprobar);
-                //recorremos las tuplas
-                while ($resultado = $registro->fetch_assoc()) {
-                    echo "<option value='$resultado[id_lector]-$resultado[id_libro]'>$resultado[id_lector] - $resultado[id_libro]</option>";
+                $sql = "SELECT id_libro, id_lector,
+                    (SELECT nombre FROM libros WHERE libros.id = prestamos.id_libro) AS libro_nombre,
+                    (SELECT lector FROM lectores WHERE lectores.id = prestamos.id_lector) AS lector_nombre
+                    FROM prestamos";
+                $registro = $conexion->query($sql);
+                while ($tupla = $registro->fetch_assoc()) {
+                    $value = implode('-', [$tupla['id_lector'], $tupla['id_libro']]);
+                    $texto = $tupla['lector_nombre'] . " - " . $tupla['libro_nombre'];
+                    echo "<option value='$value'>$texto</option>";
                 }
                 ?>
             </select>
         </label>
+        <button type="submit" value="devolver un prestamo" name="devolver">Devolver préstamo</button>
+    </form>
+    <hr>
+    <h2>Añadir libro al catálogo</h2>
+    <form action="procesar_anadir.php" method="post">
+        <label for="titulo">Título del libro: <input type="text" name="titulo"></label>
+        <label for="autor">Autor: <input type="text" name="autor"></label>
+        <label for="publicacion">Año de publicación: <input type="number" name="publicacion"></label>
+        <br><br>
+        <label for="isbn">ISBN: <input type="text" name="isbn"></label>
+        <label for="n_totales">Nº Libros: <input type="number" name="n_totales"></label>
+        <label for="n_disponibles">Nº Disponibles: <input type="number" name="n_disponibles"></label>
+        <br><br>
+        <label for="sinopsis">Sinopsis: <textarea name="sinopsis" cols=110 rows=5></textarea></label>
+        <br>
+        <br>
+        <button type="submit" value="anadir libro" name="anadir">Añadir libro</button>
     </form>
 
 

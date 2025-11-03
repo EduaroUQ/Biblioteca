@@ -36,8 +36,8 @@ if ($comprobar->num_rows <= 0) {
     
     INSERT INTO lectores (lector, dni, estado, n_prestado) VALUES 
     ('Hugo Utrilla','50235099M',TRUE,0),
-    ('Eduardo Rubio','29351647P', TRUE,0);
-    ";
+    ('Eduardo Rubio','29351647P', TRUE,0);";
+
 
     if ($conexion->multi_query($sql)) {
         while ($conexion->next_result()) {;

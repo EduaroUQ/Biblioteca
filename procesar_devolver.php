@@ -12,7 +12,7 @@ if (isset($_POST['prestamo'])) {
         $conexion->query("UPDATE lectores SET n_prestado = n_prestado - 1 WHERE id = $id_lector");
 
         // Actualizar n_disponible del libro
-        $conexion->query("UPDATE libros SET n_disponible = n_disponible + 1 WHERE id = $id_libro");
+        $conexion->query("UPDATE libros SET n_disponibles = n_disponibles + 1 WHERE id = $id_libro");
     } else {
         echo "Error al devolver el préstamo: " . $conexion->error;
     }

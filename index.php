@@ -33,6 +33,7 @@
             Lector: <select name="lector">
                 <!--Rellenamos el select con los datos de la tabla-->
                 <?php
+                echo "<option selected disabled>Seleccione un lector</option>";
                 $comprobar = "SELECT * FROM lectores WHERE estado=TRUE";
                 $registro = $conexion->query($comprobar);
                 //recorremos las tuplas
@@ -46,6 +47,7 @@
             Libro: <select name="nombre">
                 <!--Rellenamos el select con los datos de la tabla-->
                 <?php
+                echo "<option selected disabled>Seleccione un libro</option>";
                 $comprobar = "SELECT * FROM libros WHERE n_disponibles > 0";
                 $registro = $conexion->query($comprobar);
                 //recorremos las tuplas
@@ -83,21 +85,68 @@
     <hr>
     <h2>Añadir libro al catálogo</h2>
     <form action="procesar_anadir.php" method="post">
-        <label for="titulo">Título del libro: <input type="text" name="titulo"></label>
-        <label for="autor">Autor: <input type="text" name="autor"></label>
-        <label for="publicacion">Año de publicación: <input type="number" name="publicacion"></label>
+        <label for="titulo">Título del libro: <input type="text" name="titulo" required></label>
+        <label for="autor">Autor: <input type="text" name="autor" required></label>
+        <label for="publicacion">Año de publicación: <input type="number" name="publicacion" required></label>
         <br><br>
-        <label for="isbn">ISBN: <input type="text" name="isbn"></label>
-        <label for="n_totales">Nº Libros: <input type="number" name="n_totales"></label>
-        <label for="n_disponibles">Nº Disponibles: <input type="number" name="n_disponibles"></label>
+        <label for="isbn">ISBN: <input type="text" name="isbn" required></label>
+        <label for="n_totales">Nº Libros: <input type="number" name="n_totales" required></label>
+        <label for="n_disponibles">Nº Disponibles: <input type="number" name="n_disponibles" required></label>
         <br><br>
-        <label for="sinopsis">Sinopsis: <textarea name="sinopsis" cols=110 rows=5></textarea></label>
+        <label for="sinopsis">Sinopsis: <textarea name="sinopsis" cols=110 rows=5 required></textarea></label>
         <br>
         <br>
         <button type="submit" value="anadir libro" name="anadir">Añadir libro</button>
     </form>
 
+    <h2>Dar de baja catálogo</h2>
+    <form action="procesar_baja.php" method="post">
+        <label for="lector">
+            Lector: <select name="lector">
+                <!--Rellenamos el select con los datos de la tabla-->
+                <?php
+                echo "<option selected disabled>Seleccione un lector</option>";
+                $comprobar = "SELECT * FROM lectores WHERE estado=TRUE";
+                $registro = $conexion->query($comprobar);
+                //recorremos las tuplas
+                while ($resultado = $registro->fetch_assoc()) {
+                    echo "<option value='$resultado[id]'>$resultado[lector] - $resultado[dni]</option>";
+                }
+                ?>
+            </select>
+        </label>
+        <button type="submit" value="baja_lector" name="baja_lector">Dar de baja</button>
+    </form>
 
+    <hr>
+    <h2>Catálogo de libros disponibles</h2>
+    <?php
+    $sql = "SELECT nombre FROM libros WHERE n_disponibles > 0";
+    $registro = $conexion->query($sql);
+    while ($tupla = $registro->fetch_assoc()) {
+        $titulo = $tupla['nombre'];
+        echo "<p>- $titulo</p>";
+    }
+    ?>
+
+    <hr>
+    <h2>Préstamos realizados</h2>
+    <form action="procesar_consultar.php" method="post">
+        <label for="lector"> Seleccione el lector:
+            <select name="lector">
+                <?php
+                $comprobar = "SELECT * FROM lectores";
+                $registro = $conexion->query($comprobar);
+                echo "<option selected disabled>Seleccione un lector</option>";
+                //recorremos las tuplas
+                while ($resultado = $registro->fetch_assoc()) {
+                    echo "<option value='$resultado[id]'>$resultado[lector] - $resultado[dni]</option>";
+                }
+                ?>
+            </select>
+        </label>
+        <button type="submit" name="consultar">Consultar</button>
+    </form>
     <?php $conexion->close(); ?>
 </body>
 

@@ -8,7 +8,7 @@ if (isset($_POST['prestar'])) {
     $nombre_libro = $conexion->real_escape_string($_POST['nombre']);
 
     // 1. Verificar si el lector ya tiene prestado ese libro
-    $verificar_prestamo = "SELECT * FROM prestamo WHERE id_lector = $lector AND id_libro = $nombre_libro";
+    $verificar_prestamo = "SELECT * FROM prestamos WHERE id_lector = $lector AND id_libro = $nombre_libro";
     $resultado_verificacion = $conexion->query($verificar_prestamo);
 
     if ($resultado_verificacion->num_rows > 0) {
@@ -21,7 +21,7 @@ if (isset($_POST['prestar'])) {
         if ($fila_libro = $resultado_disponibilidad->fetch_assoc()) {
             if ($fila_libro['n_disponibles'] > 0) {
                 // 3. Insertar préstamo
-                $registrar_prestamo = "INSERT INTO prestamo VALUES ($lector, $nombre_libro)";
+                $registrar_prestamo = "INSERT INTO prestamos VALUES ($lector, $nombre_libro)";
                 if ($conexion->query($registrar_prestamo)) {
                     echo "Registro exitoso";
 
@@ -34,7 +34,7 @@ if (isset($_POST['prestar'])) {
                     }
 
                     // Actualizar disponibilidad del libro
-                    $nuevo_stock = $fila_libro['n_disponible'] - 1;
+                    $nuevo_stock = $fila_libro['n_disponibles'] - 1;
                     $conexion->query("UPDATE libros SET n_disponibles=$nuevo_stock WHERE id=$nombre_libro");
                 } else {
                     echo "Error al registrar: " . $conexion->error;

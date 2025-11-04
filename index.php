@@ -5,32 +5,140 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Biblioteca</title>
+    <style>
+        /* ===== Estilo base ===== */
+        body {
+            font-family: "Poppins", sans-serif;
+            background: #f5f7fa;
+            color: #333;
+            margin: 0;
+            padding: 40px;
+        }
+
+        /* ===== Título principal ===== */
+        h1 {
+            text-align: center;
+            color: #1e88e5;
+            margin-bottom: 40px;
+        }
+
+        /* ===== Secciones (cada bloque de formulario) ===== */
+        h2 {
+            color: #1565c0;
+            border-left: 5px solid #64b5f6;
+            padding-left: 10px;
+            margin-top: 50px;
+        }
+
+        /* ===== Formularios ===== */
+        form {
+            background: #ffffff;
+            padding: 20px 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            margin-top: 15px;
+            margin-bottom: 30px;
+            max-width: 800px;
+        }
+
+        /* Etiquetas y campos */
+        label {
+            display: inline-block;
+            margin: 10px 10px;
+            font-weight: 500;
+            color: #444;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select,
+        textarea {
+            font-family: inherit;
+            font-size: 1rem;
+            padding: 8px 10px;
+            border: 2px solid #bbdefb;
+            border-radius: 8px;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            outline: none;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        select:focus,
+        textarea:focus {
+            border-color: #42a5f5;
+            box-shadow: 0 0 5px rgba(66, 165, 245, 0.4);
+        }
+
+        /* ===== Botones ===== */
+        button,
+        input[type="submit"] {
+            background: #42a5f5;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 18px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.3s, transform 0.2s;
+        }
+
+        button:hover,
+        input[type="submit"]:hover {
+            background: #1e88e5;
+            transform: scale(1.03);
+        }
+
+        button:active,
+        input[type="submit"]:active {
+            transform: scale(0.97);
+        }
+
+        /* ===== Separadores ===== */
+        hr {
+            border: none;
+            border-top: 2px solid #e0e0e0;
+            margin: 40px 0;
+        }
+
+        /* ===== Párrafos (catálogo) ===== */
+        p {
+            background: #e3f2fd;
+            padding: 8px 14px;
+            border-radius: 8px;
+            width: fit-content;
+            margin: 6px 0;
+        }
+    </style>
 </head>
 
 <body>
+    <!-- Importamos la creación de la base de datos y las tablas una vez que se abra la página -->
     <?php require('crear_tablas.php');
     require('conecta.php'); ?>
     <h1>Biblioteca</h1>
     <h2>Registrar un Nuevo Lector</h2>
+
     <form action="procesar_registro.php" method="post">
         <label for="lector">Nombre y apellidos: <input type="text" name="lector"></label>
         <br><br>
         <label for="dni">DNI: <input type="text" name="dni"></label>
-        <!-- <br><br>
-        <label for="estado">Estado: <select name="estado">
-                <option value="1" selected>Alta</option>
-                <option value="0">Baja</option>
-            </select></label>
-        <br><br>
-        <label for="préstamos">Préstamos: <input type="number" name="prestamos" value="0"></label>
-        <br><br> -->
         <input type="submit" value="Registrar" name="registrar">
     </form>
+    <?php
+    session_start();
+    if (!empty($_SESSION['msg'])) {
+        echo "<p>" . $_SESSION['msg'] . "</p>";
+        unset($_SESSION['msg']);
+    }
+    ?>
+
     <hr>
     <h2>Realizar un préstamo</h2>
     <form action="procesar_prestamo.php" method="post">
         <label for="lector">
-            Lector: <select name="lector">
+            Lector: <select name="lector" required>
                 <!--Rellenamos el select con los datos de la tabla-->
                 <?php
                 echo "<option selected disabled>Seleccione un lector</option>";
@@ -44,7 +152,7 @@
             </select>
         </label>
         <label for="nombre">
-            Libro: <select name="nombre">
+            Libro: <select name="nombre" required>
                 <!--Rellenamos el select con los datos de la tabla-->
                 <?php
                 echo "<option selected disabled>Seleccione un libro</option>";
@@ -59,6 +167,13 @@
         </label>
         <input type="submit" value="Realizar un préstamo" name="prestar">
     </form>
+    <?php
+    if (!empty($_SESSION['msg_prestamo'])) {
+        echo "<p>" . $_SESSION['msg_prestamo'] . "</p>";
+        unset($_SESSION['msg_prestamo']);
+    }
+    ?>
+
     <hr>
     <h2>Devolver un préstamo</h2>
     <form action="procesar_devolver.php" method="post">
@@ -82,6 +197,12 @@
         </label>
         <button type="submit" value="devolver un prestamo" name="devolver">Devolver préstamo</button>
     </form>
+    <?php
+    if (!empty($_SESSION['msg_devolver'])) {
+        echo "<p>" . $_SESSION['msg_devolver'] . "</p>";
+        unset($_SESSION['msg_devolver']);
+    }
+    ?>
     <hr>
     <h2>Añadir libro al catálogo</h2>
     <form action="procesar_anadir.php" method="post">
@@ -93,13 +214,19 @@
         <label for="n_totales">Nº Libros: <input type="number" name="n_totales" required></label>
         <label for="n_disponibles">Nº Disponibles: <input type="number" name="n_disponibles" required></label>
         <br><br>
-        <label for="sinopsis">Sinopsis: <textarea name="sinopsis" cols=110 rows=5 required></textarea></label>
+        <label for="sinopsis">Sinopsis: <textarea name="sinopsis" cols=90 rows=5 required></textarea></label>
         <br>
         <br>
         <button type="submit" value="anadir libro" name="anadir">Añadir libro</button>
     </form>
-
-    <h2>Dar de baja catálogo</h2>
+    <?php
+    if (!empty($_SESSION['msg_anadir'])) {
+        echo "<p>" . $_SESSION['msg_anadir'] . "</p>";
+        unset($_SESSION['msg_anadir']);
+    }
+    ?>
+    <hr>
+    <h2>Dar de baja lector</h2>
     <form action="procesar_baja.php" method="post">
         <label for="lector">
             Lector: <select name="lector">
@@ -117,7 +244,12 @@
         </label>
         <button type="submit" value="baja_lector" name="baja_lector">Dar de baja</button>
     </form>
-
+    <?php
+    if (!empty($_SESSION['msg_baja'])) {
+        echo "<p>" . $_SESSION['msg_baja'] . "</p>";
+        unset($_SESSION['msg_baja']);
+    }
+    ?>
     <hr>
     <h2>Catálogo de libros disponibles</h2>
     <?php
@@ -147,6 +279,13 @@
         </label>
         <button type="submit" name="consultar">Consultar</button>
     </form>
+    <?php
+    if (!empty($_SESSION['msg_consulta'])) {
+        echo $_SESSION['msg_consulta'];
+        unset($_SESSION['msg_consulta']);
+    }
+    ?>
+
     <?php $conexion->close(); ?>
 </body>
 
